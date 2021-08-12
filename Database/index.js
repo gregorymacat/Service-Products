@@ -1,4 +1,5 @@
 const {Client} = require('pg');
+const itemsPerPage = 10;
 
 // const client = new Client({
 //   user: 'postgres',
@@ -19,7 +20,37 @@ const client = new Client({
 client.connect();
 
 module.exports = {
-  getAll: function() {
-    return client.query('SELECT * FROM products WHERE id = 1');
+  getMultipleProducts: function(pageNum, count) {
+    //High is inclusive, range of id #'s in page
+    var low = pageNum === 1 ? 1 : (itemsPerPage + 1) * (pageNum - 1);
+    var high = itemsPerPage * pageNum;
+
+    var queryArgs = [low, high, count];
+    var queryString = 'SELECT * FROM products \
+    WHERE id BETWEEN $1 AND $2 LIMIT $3;'
+
+    return client.query(queryString, queryArgs);
+  },
+  getOneProduct: function(product_id) {
+    var queryArgs = product_id;
+    var queryString = 'SELECT * FROM products WHERE id = ?';
+    return client.query(queryString, queryArgs);
+  },
+  getStyles: function(product_id) {
+    var queryArgs = product_id;
+    var queryString = 'SELECT * FROM products WHERE id = ?';
+    return client.query(queryString, queryArgs);
+  },
+  getRelated: function(product_id){
+    var queryArgs = product_id;
+    var queryString = 'SELECT * FROM products WHERE id = ?';
+    return client.query(queryString, queryArgs);
   }
 }
+
+/*
+`PREPARE query (int, int, int) AS \
+      SELECT * FROM products \
+      WHERE id BETWEEN $1 AND $2 LIMIT $3; \
+    EXECUTE query(${low}, ${high}, ${count});`;
+    */

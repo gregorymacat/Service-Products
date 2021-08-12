@@ -4,7 +4,7 @@
   "description": "Create an API endpoint that serves up data about products that was extracted from the Atelier API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon --delay 500ms Server/index.js"
   },
   "repository": {
@@ -19,6 +19,8 @@
   "homepage": "https://github.com/gregorymacat/Service-Products#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "frisby": "^2.1.3",
+    "jest": "^27.0.6",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.12",
     "pg": "^8.7.1"

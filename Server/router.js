@@ -8,7 +8,10 @@ router.get('/test', (req, res) => {
 
 });
 router.get('/products', (req, res) => {
-  fetchers.getMultipleProducts(req.query.page, req.query.count)
+  var page = req.query.page || 1;
+  var count = req.query.page || 5;
+
+  fetchers.getMultipleProducts(page, count)
     .then(response => {
       console.log('Success retrieving data');
       return res.send(response.rows);

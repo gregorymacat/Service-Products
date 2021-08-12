@@ -19,13 +19,37 @@ router.get('/products', (req, res) => {
     });
 });
 router.get('/products/:product_id', (req, res) => {
-  res.send(req.params);
+  fetchers.getOneProduct(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data');
+      return res.send(response.rows);
+    })
+    .catch(err => {
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
 router.get('/products/:product_id/styles', (req, res) => {
-  res.send(req.params);
+  fetchers.getStyles(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data');
+      return res.send(response.rows);
+    })
+    .catch(err => {
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
 router.get('/products/:product_id/related', (req, res) => {
-  res.send(req.params);
+  fetchers.getRelated(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data ', response);
+      return res.send(response.rows);
+    })
+    .catch(err => {
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
 
 

@@ -32,18 +32,16 @@ module.exports = {
     return client.query(queryString, queryArgs);
   },
   getOneProduct: function(product_id) {
-    var queryArgs = product_id;
-    var queryString = 'SELECT * FROM products WHERE id = ?';
-    return client.query(queryString, queryArgs);
+    var queryString = 'SELECT * FROM products WHERE id = $1';
+    return client.query(queryString, [product_id]);
   },
   getStyles: function(product_id) {
-    var queryArgs = product_id;
-    var queryString = 'SELECT * FROM products WHERE id = ?';
-    return client.query(queryString, queryArgs);
+    var queryString = 'SELECT * FROM styles WHERE id = $1';
+    return client.query(queryString, [product_id]);
   },
   getRelated: function(product_id){
-    var queryArgs = product_id;
-    var queryString = 'SELECT * FROM products WHERE id = ?';
+    var queryArgs = [product_id];
+    var queryString = 'SELECT * FROM related WHERE current_product_id = $1';
     return client.query(queryString, queryArgs);
   }
 }

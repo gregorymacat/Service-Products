@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const fetchers = require('../Database/index.js');
+const models = require('../Model/models.js');
 
 router.get('/', (req, res) => {
   res.send('Hello World!');
@@ -9,7 +10,7 @@ router.get('/test', (req, res) => {
 });
 router.get('/products', (req, res) => {
   var page = req.query.page || 1;
-  var count = req.query.page || 5;
+  var count = req.query.count || 5;
 
   fetchers.getMultipleProducts(page, count)
     .then(response => {
@@ -23,9 +24,10 @@ router.get('/products', (req, res) => {
 });
 router.get('/products/:product_id', (req, res) => {
   fetchers.getOneProduct(req.params.product_id)
-    .then(response => {
+    .then(results => {
       console.log('Success retrieving data');
-      return res.send(response.rows);
+      var response = models.formatOneProduct(results)
+      res.send(response);
     })
     .catch(err => {
       console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);

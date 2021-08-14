@@ -24,10 +24,8 @@ router.get('/products', (req, res) => {
 });
 router.get('/products/:product_id', (req, res) => {
   fetchers.getOneProduct(req.params.product_id)
-    .then(results => {
-      console.log('Success retrieving data');
-      var response = models.formatOneProduct(results)
-      res.send(response);
+    .then(response => {
+      res.send(response.rows);
     })
     .catch(err => {
       console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);

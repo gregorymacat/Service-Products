@@ -40,19 +40,27 @@ module.exports = {
     // var queryString =
     // 'SELECT * FROM products WHERE id = $1';
     // return client.query(queryString, [product_id]);
-    var prodQueryString =
-    'SELECT * \
-    FROM products \
-    WHERE id = $1';
-    var prodQuery = client.query(prodQueryString, [product_id])
-
-    var featQueryString =
-    'SELECT feature, value \
-    FROM features \
+    var queryString =
+    'SELECT \
+      json_build_object( \
+        \'feature\', f.feature, \
+        \'value\', f.value \
+      ) \
+    FROM features f\
     WHERE product_id = $1';
-    var featQuery = client.query(featQueryString, [product_id])
 
-    return Promise.all([prodQuery, featQuery])
+
+
+    // 'SELECT products.*, \
+    // array_agg( row_to_json(features.feature, features.value ORDER BY features.id)) \
+    // AS features\
+    // FROM products \
+    // INNER JOIN features \
+    // ON products.id = features.product_id \
+    // WHERE products.id = $1 \
+    // GROUP BY products.id';
+
+    return client.query(queryString, [product_id])
   },
   getStyles: function(product_id) {
     var queryString = 'SELECT * FROM styles WHERE id = $1';
@@ -78,4 +86,14 @@ var queryString =
     'SELECT products.*, features.feature, features.value FROM products \
     INNER JOIN features ON products.id = features.product_id \
     WHERE products.id = $1';
+
+Attempting to use array agg. So far this returns an array of space
+separated strings.
+SELECT ARRAY_AGG(feature || \' \' || value) AS features
+
+This works to return a JSON object of all rows of features with the title
+row_to_json
+'SELECT row_to_json((SELECT d FROM (SELECT feature, value) d))\
+    FROM features \
+    WHERE product_id = $1'
     */

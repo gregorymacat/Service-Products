@@ -41,13 +41,16 @@ module.exports = {
     // 'SELECT * FROM products WHERE id = $1';
     // return client.query(queryString, [product_id]);
     var queryString =
-    'SELECT \
+    'SELECT products.*, ARRAY_AGG(\
       json_build_object( \
-        \'feature\', f.feature, \
-        \'value\', f.value \
-      ) \
-    FROM features f\
-    WHERE product_id = $1';
+        \'feature\', features.feature, \
+        \'value\', features.value \
+      )) AS features\
+    FROM products\
+    INNER JOIN features\
+    ON products.id = features.product_id\
+    WHERE product_id = $1\
+    GROUP BY products.id';
 
 
 
@@ -63,8 +66,22 @@ module.exports = {
     return client.query(queryString, [product_id])
   },
   getStyles: function(product_id) {
-    var queryString = 'SELECT * FROM styles WHERE id = $1';
+    var queryString =
+    'SELECT styles.product_id, \
+      JSONB_OBJECT_AGG( \
+          skus.id, json_build_object( \
+            \'quantity\', skus.quantity, \
+            \'size\', skus.size \
+          ) \
+        ) AS skus \
+    FROM styles \
+    INNER JOIN skus \
+    ON styles.id = skus.style_id \
+    WHERE styles.product_id = $1 \
+    GROUP BY styles.id';
     return client.query(queryString, [product_id]);
+    //INNER JOIN photos\
+    //ON styles.id = photos.style_id \
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];

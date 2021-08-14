@@ -36,7 +36,7 @@ router.get('/products/:product_id/styles', (req, res) => {
   fetchers.getStyles(req.params.product_id)
     .then(response => {
       console.log('Success retrieving data');
-      return res.send(response.rows);
+      return res.send(response.rows[0]);
     })
     .catch(err => {
       console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);

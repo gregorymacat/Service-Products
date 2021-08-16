@@ -101,7 +101,10 @@ module.exports = {
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];
-    var queryString = 'SELECT * FROM related WHERE current_product_id = $1';
+    var queryString =
+    'SELECT ARRAY_AGG(related_product_id) AS related\
+    FROM related \
+    WHERE current_product_id = $1';
     return client.query(queryString, queryArgs);
   }
 }

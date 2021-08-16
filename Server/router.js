@@ -25,7 +25,7 @@ router.get('/products', (req, res) => {
 router.get('/products/:product_id', (req, res) => {
   fetchers.getOneProduct(req.params.product_id)
     .then(response => {
-      res.send(response.rows);
+      res.send(response.rows[0]);
     })
     .catch(err => {
       console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
@@ -46,8 +46,8 @@ router.get('/products/:product_id/styles', (req, res) => {
 router.get('/products/:product_id/related', (req, res) => {
   fetchers.getRelated(req.params.product_id)
     .then(response => {
-      console.log('Success retrieving data ', response);
-      return res.send(response.rows);
+      console.log('Success retrieving data');
+      return res.send(response.rows[0].related);
     })
     .catch(err => {
       console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);

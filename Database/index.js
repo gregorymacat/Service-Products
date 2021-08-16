@@ -68,20 +68,36 @@ module.exports = {
   getStyles: function(product_id) {
     var queryString =
     'SELECT styles.product_id, \
-      JSONB_OBJECT_AGG( \
-          skus.id, json_build_object( \
-            \'quantity\', skus.quantity, \
-            \'size\', skus.size \
+      JSON_BUILD_ARRAY ( \
+        JSON_BUILD_OBJECT ( \
+          \'style_id\', styles.id, \
+          \'name\', styles.name, \
+          \'original_price\', styles.original_price, \
+          \'sale_price\', styles.sale_price, \
+          \'default?\', styles.default_style, \
+          \'photos\', ARRAY_AGG ( DISTINCT \
+            JSONB_BUILD_OBJECT ( \
+              \'thumbnail_url\', photos.thumbnail_url, \
+              \'url\', photos.url \
+            ) \
           ) \
-        ) AS skus \
+        ) \
+      ) AS results, \
+      JSONB_OBJECT_AGG( DISTINCT \
+        skus.id, JSONB_BUILD_OBJECT( \
+          \'quantity\', skus.quantity, \
+          \'size\', skus.size \
+        ) \
+      ) AS skus \
     FROM styles \
     INNER JOIN skus \
-    ON styles.id = skus.style_id \
+    on styles.id = skus.style_id \
+    INNER JOIN photos \
+    ON styles.id = photos.style_id \
     WHERE styles.product_id = $1 \
     GROUP BY styles.id';
+
     return client.query(queryString, [product_id]);
-    //INNER JOIN photos\
-    //ON styles.id = photos.style_id \
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];

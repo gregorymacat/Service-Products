@@ -83,7 +83,7 @@ module.exports = {
           ) \
         ) \
       ) AS results, \
-      JSONB_OBJECT_AGG( DISTINCT \
+      JSON_OBJECT_AGG( DISTINCT \
         skus.id, JSONB_BUILD_OBJECT( \
           \'quantity\', skus.quantity, \
           \'size\', skus.size \

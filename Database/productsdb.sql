@@ -14,7 +14,7 @@
 -- DROP TABLE IF EXISTS features;
 -- DROP TABLE IF EXISTS related;
 -- DROP TABLE IF EXISTS styles CASCADE;
-DROP TABLE IF EXISTS photos;
+-- DROP TABLE IF EXISTS photos;
 -- DROP TABLE IF EXISTS skus;
 
 -- PRODUCTS TABLE CREATION
@@ -72,17 +72,17 @@ DROP TABLE IF EXISTS photos;
 -- DELIMITER ',' NULL AS 'NULL' CSV HEADER;
 
 -- PHOTOS TABLE CREATION
-CREATE TABLE IF NOT EXISTS photos (
-  id integer PRIMARY KEY,
-  style_id integer,
-  url varchar(1000),
-  thumbnail_url varchar(1000),
-  FOREIGN KEY (style_id) REFERENCES styles(id)
-);
+-- CREATE TABLE IF NOT EXISTS photos (
+--   id integer PRIMARY KEY,
+--   style_id integer,
+--   url varchar(1000),
+--   thumbnail_url varchar(1000),
+--   FOREIGN KEY (style_id) REFERENCES styles(id)
+-- );
 
-COPY photos(id, style_id, url, thumbnail_url)
-FROM '/home/gzmacat/hackreactor/Service-Products/Database/photos.csv'
-DELIMITER ',' NULL AS 'NULL' CSV HEADER;
+-- COPY photos(id, style_id, url, thumbnail_url)
+-- FROM '/home/gzmacat/hackreactor/Service-Products/Database/photos.csv'
+-- DELIMITER ',' NULL AS 'NULL' CSV HEADER;
 
 -- SKUS TABLE CREATION
 -- CREATE TABLE IF NOT EXISTS skus (

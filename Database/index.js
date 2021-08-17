@@ -1,8 +1,8 @@
-const {Pool} = require('pg');
+const {Client} = require('pg');
 const models = require('../Model/models.js');
 const itemsPerPage = 10;
 
-// const pool = new Pool({
+// const client = new Client({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'testing',
@@ -10,7 +10,7 @@ const itemsPerPage = 10;
 //   port: 5432,
 // });
 
-const pool = new Pool({
+const client = new Client({
   user: 'gzmacat',
   host: 'localhost',
   database: 'productsdb',
@@ -18,7 +18,7 @@ const pool = new Pool({
   port: 5432,
 });
 
-pool.connect();
+client.connect();
 
 module.exports = {
   // COMPLETE
@@ -34,12 +34,12 @@ module.exports = {
     WHERE id BETWEEN $1 AND $2 \
     LIMIT $3;'
 
-    return pool.query(queryString, queryArgs);
+    return client.query(queryString, queryArgs);
   },
   getOneProduct: function(product_id) {
     // var queryString =
     // 'SELECT * FROM products WHERE id = $1';
-    // return pool.query(queryString, [product_id]);
+    // return client.query(queryString, [product_id]);
     var queryString =
     'SELECT products.*, ARRAY_AGG(\
       json_build_object( \
@@ -61,10 +61,9 @@ module.exports = {
     // WHERE products.id = $1 \
     // GROUP BY products.id';
 
-    return pool.query(queryString, [product_id]);
-
+    return client.query(queryString, [product_id])
   },
-  getStyles: function(product_id, callback) {
+  getStyles: function(product_id) {
     var queryString =
     'SELECT styles.product_id, \
       JSON_BUILD_ARRAY ( \
@@ -96,7 +95,9 @@ module.exports = {
     WHERE styles.product_id = $1 \
     GROUP BY styles.id';
 
-    return pool.query(queryString, [product_id])
+    return client.query(queryString, [product_id]);
+    //INNER JOIN photos\
+    //ON styles.id = photos.style_id \
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];
@@ -104,31 +105,7 @@ module.exports = {
     'SELECT ARRAY_AGG(related_product_id) AS related\
     FROM related \
     WHERE current_product_id = $1';
-    return pool.query(queryString, queryArgs);
+
+    return client.query(queryString, queryArgs);
   }
 }
-
-/*
-Way to prepare instead of $
-`PREPARE query (int, int, int) AS \
-      SELECT * FROM products \
-      WHERE id BETWEEN $1 AND $2 LIMIT $3; \
-    EXECUTE query(${low}, ${high}, ${count});`;
-
-Example of inner join that works for a single product except it returns
-as two separate objects
-var queryString =
-    'SELECT products.*, features.feature, features.value FROM products \
-    INNER JOIN features ON products.id = features.product_id \
-    WHERE products.id = $1';
-
-Attempting to use array agg. So far this returns an array of space
-separated strings.
-SELECT ARRAY_AGG(feature || \' \' || value) AS features
-
-This works to return a JSON object of all rows of features with the title
-row_to_json
-'SELECT row_to_json((SELECT d FROM (SELECT feature, value) d))\
-    FROM features \
-    WHERE product_id = $1'
-    */

@@ -98,18 +98,7 @@ module.exports = {
     WHERE styles.product_id = $1 \
     GROUP BY styles.id';
 
-    return pool.connect()
-    .then(client => {
-      return client.query(queryString, [product_id])
-        .then(response => {
-          client.release();
-          callback(null, response);
-        })
-    })
-    .catch(err => {
-      client.release();
-      callback(err);
-    })
+    return pool.query(queryString, [product_id])
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];

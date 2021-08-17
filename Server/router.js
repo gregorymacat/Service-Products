@@ -34,13 +34,15 @@ router.get('/products/:product_id', (req, res) => {
     });
 });
 router.get('/products/:product_id/styles', (req, res) => {
-  fetchers.getStyles(req.params.product_id, (err, data) => {
-    if (err) {
+  fetchers.getStyles(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data');
+      return res.send(response.rows[0]);
+    })
+    .catch(err => {
       console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
       return res.sendStatus(404);
-    }
-    return res.send(data.rows[0]);
-  })
+    });
 });
 router.get('/products/:product_id/related', (req, res) => {
   fetchers.getRelated(req.params.product_id)
@@ -53,6 +55,5 @@ router.get('/products/:product_id/related', (req, res) => {
       return res.sendStatus(404);
     });
 });
-
 
 module.exports.router = router;

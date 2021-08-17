@@ -52,8 +52,6 @@ module.exports = {
     WHERE product_id = $1\
     GROUP BY products.id';
 
-
-
     // 'SELECT products.*, \
     // array_agg( row_to_json(features.feature, features.value ORDER BY features.id)) \
     // AS features\

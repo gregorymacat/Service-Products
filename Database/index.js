@@ -34,7 +34,22 @@ module.exports = {
     WHERE id BETWEEN $1 AND $2 \
     LIMIT $3;'
 
-    return pool.query(queryString, queryArgs);
+    return pool.connect()
+      .then(client => {
+        return client.query(queryString, queryArgs)
+          .then(response => {
+            client.release();
+            return Promise.resolve(response);
+          })
+          .catch(err => {
+            client.release();
+            return Promise.reject(err);
+          })
+      })
+      .catch(err => {
+        console.error('ERROR CONNECTING TO POOL')
+        return Promise.reject(err);
+      })
   },
   getOneProduct: function(product_id) {
     // var queryString =
@@ -63,10 +78,25 @@ module.exports = {
     // WHERE products.id = $1 \
     // GROUP BY products.id';
 
-    return pool.query(queryString, [product_id]);
+    return pool.connect()
+      .then(client => {
+        return client.query(queryString, [product_id])
+          .then(response => {
+            client.release();
+            return Promise.resolve(response);
+          })
+          .catch(err => {
+            client.release();
+            return Promise.reject(err);
+          })
+      })
+      .catch(err => {
+        console.error('ERROR CONNECTING TO POOL')
+        return Promise.reject(err);
+      })
 
   },
-  getStyles: function(product_id, callback) {
+  getStyles: function(product_id) {
     var queryString =
     'SELECT styles.product_id, \
       JSON_BUILD_ARRAY ( \
@@ -99,17 +129,21 @@ module.exports = {
     GROUP BY styles.id';
 
     return pool.connect()
-    .then(client => {
-      return client.query(queryString, [product_id])
-        .then(response => {
-          client.release();
-          callback(null, response);
-        })
-    })
-    .catch(err => {
-      client.release();
-      callback(err);
-    })
+      .then(client => {
+        return client.query(queryString, [product_id])
+          .then(response => {
+            client.release();
+            return Promise.resolve(response);
+          })
+          .catch(err => {
+            client.release();
+            return Promise.reject(err);
+          })
+      })
+      .catch(err => {
+        console.error('ERROR CONNECTING TO POOL')
+        return Promise.reject(err);
+      })
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];
@@ -117,6 +151,22 @@ module.exports = {
     'SELECT ARRAY_AGG(related_product_id) AS related\
     FROM related \
     WHERE current_product_id = $1';
-    return pool.query(queryString, queryArgs);
+
+    return pool.connect()
+      .then(client => {
+        return client.query(queryString, [product_id])
+          .then(response => {
+            client.release();
+            return Promise.resolve(response);
+          })
+          .catch(err => {
+            client.release();
+            return Promise.reject(err);
+          })
+      })
+      .catch(err => {
+        console.error('ERROR CONNECTING TO POOL')
+        return Promise.reject(err);
+      })
   }
 }

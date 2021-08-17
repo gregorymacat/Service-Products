@@ -1,8 +1,8 @@
-const {Client} = require('pg');
+const {Pool} = require('pg');
 const models = require('../Model/models.js');
 const itemsPerPage = 10;
 
-// const client = new Client({
+// const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'testing',
@@ -10,7 +10,7 @@ const itemsPerPage = 10;
 //   port: 5432,
 // });
 
-const client = new Client({
+const pool = new Pool({
   user: 'gzmacat',
   host: 'localhost',
   database: 'productsdb',
@@ -18,7 +18,7 @@ const client = new Client({
   port: 5432,
 });
 
-client.connect();
+pool.connect();
 
 module.exports = {
   // COMPLETE
@@ -34,12 +34,12 @@ module.exports = {
     WHERE id BETWEEN $1 AND $2 \
     LIMIT $3;'
 
-    return client.query(queryString, queryArgs);
+    return pool.query(queryString, queryArgs);
   },
   getOneProduct: function(product_id) {
     // var queryString =
     // 'SELECT * FROM products WHERE id = $1';
-    // return client.query(queryString, [product_id]);
+    // return pool.query(queryString, [product_id]);
     var queryString =
     'SELECT products.*, ARRAY_AGG(\
       json_build_object( \
@@ -63,9 +63,10 @@ module.exports = {
     // WHERE products.id = $1 \
     // GROUP BY products.id';
 
-    return client.query(queryString, [product_id])
+    return pool.query(queryString, [product_id]);
+
   },
-  getStyles: function(product_id) {
+  getStyles: function(product_id, callback) {
     var queryString =
     'SELECT styles.product_id, \
       JSON_BUILD_ARRAY ( \
@@ -97,7 +98,18 @@ module.exports = {
     WHERE styles.product_id = $1 \
     GROUP BY styles.id';
 
-    return client.query(queryString, [product_id]);
+    return pool.connect()
+    .then(client => {
+      return client.query(queryString, [product_id])
+        .then(response => {
+          client.release();
+          callback(null, response);
+        })
+    })
+    .catch(err => {
+      client.release();
+      callback(err);
+    })
   },
   getRelated: function(product_id){
     var queryArgs = [product_id];
@@ -105,7 +117,7 @@ module.exports = {
     'SELECT ARRAY_AGG(related_product_id) AS related\
     FROM related \
     WHERE current_product_id = $1';
-    return client.query(queryString, queryArgs);
+    return pool.query(queryString, queryArgs);
   }
 }
 

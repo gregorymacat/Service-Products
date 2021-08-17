@@ -41,15 +41,32 @@ describe('Related Products API Endpoint', () => {
     return frisby.get('http://localhost:3000/products/1/related')
       .expect('status', 200)
   });
-  // it('retrieves related products for id in GET request', () => {
-  //   return frisby.get('http://localhost:3000/products/1')
-  //     .expect()
-  // });
+  it('retrieves related products for id in GET request', () => {
+    return frisby.get('http://localhost:3000/products/1/related')
+      .expect('jsonTypes', Joi.array());
+  });
 });
 
 describe('Product Styles API Endpoint', () => {
   it('accepts GET requests with product id', () => {
     return frisby.get('http://localhost:3000/products/1/styles')
       .expect('status', 200)
+  });
+  it('retrieves product styles for id in GET request', () => {
+    return frisby.get('http://localhost:3000/products/1/styles')
+      .expect('jsonTypes', {
+        'product_id': Joi.number(),
+        'name': Joi.string(),
+        'original_price': Joi.number(),
+        'sale_price': Joi.number(),
+        'default?': Joi.boolean(),
+        'photos': Joi.array().items(
+          Joi.object().keys({
+            'thumbnail_url': Joi.string(),
+            'url': Joi.string()
+          })
+        ),
+        'skus': Joi.object()
+      });
   });
 });

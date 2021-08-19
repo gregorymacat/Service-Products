@@ -10,7 +10,7 @@ const itemsPerPage = 10;
 // });
 
 const pool = new Pool({
-  user: 'gzmacat',
+  user: 'postgres',
   host: 'localhost',
   database: 'productsdb',
   password: 'password',

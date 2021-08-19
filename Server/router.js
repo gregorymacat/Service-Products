@@ -1,32 +1,58 @@
 const router = require('express').Router();
-const {getAll} = require('../Database/index.js');
+const fetchers = require('../Database/index.js');
 
 router.get('/', (req, res) => {
   res.send('Hello World!');
 });
 router.get('/test', (req, res) => {
-  getAll()
+
+});
+router.get('/products', (req, res) => {
+  var page = req.query.page || 1;
+  var count = req.query.count || 5;
+
+  fetchers.getMultipleProducts(page, count)
     .then(response => {
       console.log('Success retrieving data');
       return res.send(response.rows);
     })
     .catch(err => {
-      return console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err)
-    })
-  ;
-});
-router.get('/products', (req, res) => {
-  res.send(req.query.page);
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
 router.get('/products/:product_id', (req, res) => {
-  res.send(req.params);
+  fetchers.getOneProduct(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data');
+      return res.send(response.rows[0]);
+    })
+    .catch(err => {
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
 router.get('/products/:product_id/styles', (req, res) => {
-  res.send(req.params);
+  fetchers.getStyles(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data');
+      return res.send(response.rows[0]);
+    })
+    .catch(err => {
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
 router.get('/products/:product_id/related', (req, res) => {
-  res.send(req.params);
+  fetchers.getRelated(req.params.product_id)
+    .then(response => {
+      console.log('Success retrieving data');
+      return res.send(response.rows[0].related);
+    })
+    .catch(err => {
+      console.error('UNABLE TO RETRIEVE DATA FROM DATABASE ', err);
+      return res.sendStatus(404);
+    });
 });
-
 
 module.exports.router = router;

@@ -1,5 +1,4 @@
 const {Pool} = require('pg');
-const models = require('../Model/models.js');
 const itemsPerPage = 10;
 
 // const pool = new Pool({

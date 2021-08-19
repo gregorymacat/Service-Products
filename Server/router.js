@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const fetchers = require('../Database/index.js');
-const models = require('../Model/models.js');
 
 router.get('/', (req, res) => {
   res.send('Hello World!');

@@ -9,7 +9,6 @@ services:
     image: gregorymacat/service-products:app_1.0
     ports:
       - 3000:3000
-
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
